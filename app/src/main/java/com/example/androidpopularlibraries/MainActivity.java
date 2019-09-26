@@ -39,12 +39,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
-    RestApi api = retrofitAdapter.create(RestApi.class);
+    IRestApi api = retrofitAdapter.create(IRestApi.class);
 
-    public interface RestApi{
-        @GET("users/{user}")
-        Single<RetrofitModel> getData(@Path("user") String user);
-    }
+//    public interface RestApi{
+//        @GET("users/{user}")
+//        Single<RetrofitModel> getData(@Path("user") String user);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
