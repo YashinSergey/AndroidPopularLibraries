@@ -82,13 +82,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void downloadOneUrl(String request) {
-        api.getData(request).retry(2).subscribeOn(Schedulers.io()).subscribe(new SingleObserver<RetrofitModel>() {
+        api.getData(request).retry(2)
+                .subscribeOn(Schedulers.io())
+                .subscribe(new SingleObserver<RetrofitModel>() {
             @Override
             public void onSubscribe(Disposable d) {}
 
             @Override
             public void onSuccess(RetrofitModel retrofitModel) {
-                mInfoTextView.setText(retrofitModel.getAvatarUrl());
+                mInfoTextView.setText(retrofitModel.getName());
                 progressBar.setVisibility(View.GONE);
             }
 
