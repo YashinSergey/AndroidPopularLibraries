@@ -17,15 +17,13 @@ import android.widget.Toast;
 
 import java.util.Objects;
 
-import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -39,12 +37,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
-    IRestApi api = retrofitAdapter.create(IRestApi.class);
+    private IRestApi api = retrofitAdapter.create(IRestApi.class);
 
-//    public interface RestApi{
-//        @GET("users/{user}")
-//        Single<RetrofitModel> getData(@Path("user") String user);
-//    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
