@@ -16,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.androidpopularlibraries.model.GitHubData;
 import com.example.androidpopularlibraries.model.ReposModel;
 import com.example.androidpopularlibraries.model.UserModel;
 

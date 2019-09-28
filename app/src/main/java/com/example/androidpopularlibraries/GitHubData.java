@@ -1,4 +1,6 @@
-package com.example.androidpopularlibraries.model;
+package com.example.androidpopularlibraries;
+
+import com.example.androidpopularlibraries.model.IRestApi;
 
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
