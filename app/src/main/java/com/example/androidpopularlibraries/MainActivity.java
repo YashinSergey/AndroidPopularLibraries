@@ -2,6 +2,7 @@ package com.example.androidpopularlibraries;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import android.content.Context;
@@ -15,36 +16,25 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.androidpopularlibraries.model.ReposModel;
+import com.example.androidpopularlibraries.model.UserModel;
+
+import java.util.List;
 import java.util.Objects;
 
-import io.reactivex.Single;
 import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private String baseUrl = "https://api.github.com";
-    private TextView mInfoTextView;
+    private TextView tvUser;
+    private TextView tvRepos;
     private ProgressBar progressBar;
     private EditText editText;
     private Button btnLoad;
-    private Retrofit retrofitAdapter = new Retrofit.Builder()
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
-    RestApi api = retrofitAdapter.create(RestApi.class);
-
-    public interface RestApi{
-        @GET("users/{user}")
-        Single<RetrofitModel> getData(@Path("user") String user);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,16 +46,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initViews() {
         editText = findViewById(R.id.editText);
-        mInfoTextView = findViewById(R.id.tvLoad);
+        tvUser = findViewById(R.id.tvUser);
+        tvRepos = findViewById(R.id.tvRepos);
         progressBar = findViewById(R.id.progressBar);
         btnLoad = findViewById(R.id.btnLoad);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onClick(View view) {
         if (!checkNetworkConnection()) return;
-
-        downloadOneUrl(editText.getText().toString());
+        if (editText.getText().toString().equals("")) {
+            Toast.makeText(this, "Enter search query", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        progressBar.setVisibility(View.VISIBLE);
+        String request = editText.getText().toString();
+        downloadUser(request);
+        downloadReposList(request);
         hideKeyboard(this, view);
     }
 
@@ -81,25 +79,58 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
-    private void downloadOneUrl(String request) {
-        api.getData(request).retry(2)
+    private void downloadUser(String request) {
+        GitHubData.getGitHubData().getAPI().loadUser(request).retry(2)
                 .subscribeOn(Schedulers.io())
-                .subscribe(new SingleObserver<RetrofitModel>() {
-            @Override
-            public void onSubscribe(Disposable d) {}
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<UserModel>() {
+                    Disposable disposable;
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposable = d;
+                    }
+                    @Override
+                    public void onSuccess(UserModel userModel) {
+                        tvUser.setText(userModel.getLogin());
+                        progressBar.setVisibility(View.GONE);
+                        disposable.dispose();
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        progressBar.setVisibility(View.GONE);
+                        disposable.dispose();
+                    }
+                });
+    }
 
-            @Override
-            public void onSuccess(RetrofitModel retrofitModel) {
-                mInfoTextView.setText(retrofitModel.getName());
-                progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-                progressBar.setVisibility(View.GONE);
-            }
-        });
+    private void downloadReposList(String request) {
+        GitHubData.getGitHubData().getAPI().loadRepos(request).retry(2)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<List<ReposModel>>() {
+                    Disposable disposable;
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposable = d;
+                    }
+                    @Override
+                    public void onSuccess(List<ReposModel> reposModelList) {
+                        StringBuilder builder = new StringBuilder();
+                        for (ReposModel repos : reposModelList) {
+                            builder.append(repos.getName()).append("\n");
+                        }
+                        tvRepos.setText(builder.toString());
+                        progressBar.setVisibility(View.GONE);
+                        disposable.dispose();
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        progressBar.setVisibility(View.GONE);
+                        disposable.dispose();
+                    }
+                });
     }
 
     public static void hideKeyboard(Context context, View view) {
