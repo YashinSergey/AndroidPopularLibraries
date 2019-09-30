@@ -183,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     @Override
                     public void onSuccess(List<UserModel> list) {
-                         list.get(0);
                         tvInfo.append("\n Size = " + list.size() + "\n---------------------");
                         for (UserModel model : list) {
                             userModelList.add(model);
@@ -193,35 +192,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             "\nURI = " + model.getAvatarUrl() +
                                             "\n-----------------");
                         }
-                        progressBar.setVisibility(View.GONE);
-                        disposable.dispose();
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        progressBar.setVisibility(View.GONE);
-                        disposable.dispose();
-                    }
-                });
-    }
-
-    private void downloadReposList(String request) {
-        GitHubData.getGitHubData().getAPI().loadRepos(request).retry(2)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<List<ReposModel>>() {
-                    Disposable disposable;
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        disposable = d;
-                    }
-                    @Override
-                    public void onSuccess(List<ReposModel> reposModelList) {
-                        StringBuilder builder = new StringBuilder();
-                        for (ReposModel repos : reposModelList) {
-                            builder.append(repos.getName()).append("\n");
-                        }
-                        tvInfo.setText(builder.toString());
                         progressBar.setVisibility(View.GONE);
                         disposable.dispose();
                     }
