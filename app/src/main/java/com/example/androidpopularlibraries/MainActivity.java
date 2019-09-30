@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView tvInfo;
     private ProgressBar progressBar;
-    private EditText editText;
     private Button btnLoad;
     private Button saveToDbBtn;
     private Button selectAllFromDbBtn;
@@ -65,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initViews() {
-        editText = findViewById(R.id.editText);
         tvInfo = findViewById(R.id.tvInfo);
         progressBar = findViewById(R.id.progressBar);
         btnLoad = findViewById(R.id.btnLoad);
