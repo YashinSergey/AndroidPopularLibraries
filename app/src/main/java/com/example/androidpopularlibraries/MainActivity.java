@@ -11,13 +11,11 @@ import android.net.NetworkInfo;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.androidpopularlibraries.database.Orm;
-import com.example.androidpopularlibraries.model.ReposModel;
 import com.example.androidpopularlibraries.model.RoomModel;
 import com.example.androidpopularlibraries.model.UserModel;
 
@@ -27,7 +25,6 @@ import java.util.List;
 import java.util.Objects;
 
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
 import io.reactivex.SingleObserver;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -72,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         deleteAllFromDbBtn = findViewById(R.id.btnDeleteAll);
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public void onClick(View view) {
         if (!checkNetworkConnection()) return;
@@ -83,50 +79,56 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 downloadUserModel();
                 break;
             case R.id.btnSave:
-                Single.create((new SingleOnSubscribe<Bundle>() {
-                    @Override
-                    public void subscribe(SingleEmitter<Bundle> emitter) throws Exception {
-                        start = new Date();
-                        List<RoomModel> roomModelList = new ArrayList<>();
-                        RoomModel roomModel = new RoomModel();
-                        for (UserModel model : userModelList) {
-                            roomModel.setLogin(model.getLogin());
-                            roomModel.setName(model.getName());
-                            roomModel.setAvatarUrl(model.getAvatarUrl());
-                            roomModelList.add(roomModel);
-                        }
-                        Orm.getOrm().getDatabase().dao().insertAll(roomModelList);
-                        end = new Date();
-                        List<RoomModel> temporaryList = Orm.getOrm().getDatabase().dao().getAll();
-                        emitter.onSuccess(createBundle(temporaryList, start, end));
-                    }
-                })).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(MyObserver());
+                saveToDb();
                 break;
             case R.id.btnSelectAll:
-                    Single.create(new SingleOnSubscribe<Bundle>() {
-                        @Override
-                        public void subscribe(SingleEmitter<Bundle> emitter) throws Exception {
-                            start = new Date();
-                            List<RoomModel> roomModelList = Orm.getOrm().getDatabase().dao().getAll();
-                            end = new Date();
-                            emitter.onSuccess(createBundle(roomModelList, start, end));
-                        }
-                    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(MyObserver());
+                selectAllFromDb();
                 break;
             case R.id.btnDeleteAll:
-                Single.create(new SingleOnSubscribe<Bundle>() {
-                    @Override
-                    public void subscribe(SingleEmitter<Bundle> emitter) throws Exception {
-                        List<RoomModel> roomModelList = Orm.getOrm().getDatabase().dao().getAll();
-                        start = new Date();
-                        Orm.getOrm().getDatabase().dao().deleteAll();
-                        end = new Date();
-                        emitter.onSuccess(createBundle(roomModelList, start, end));
-                    }
-                }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(MyObserver());
+                deleteAllFromDb();
                 break;
         }
         hideKeyboard(this, view);
+    }
+
+    @SuppressLint("CheckResult")
+    private void deleteAllFromDb() {
+        Single.create((SingleOnSubscribe<Bundle>) emitter -> {
+            List<RoomModel> roomModelList = Orm.getOrm().getDatabase().dao().getAll();
+            start = new Date();
+            Orm.getOrm().getDatabase().dao().deleteAll();
+            end = new Date();
+            emitter.onSuccess(createBundle(roomModelList, start, end));
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(MyObserver());
+    }
+
+    @SuppressLint("CheckResult")
+    private void selectAllFromDb() {
+        Single.create((SingleOnSubscribe<Bundle>) emitter -> {
+            start = new Date();
+            List<RoomModel> roomModelList = Orm.getOrm().getDatabase().dao().getAll();
+            end = new Date();
+            emitter.onSuccess(createBundle(roomModelList, start, end));
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(MyObserver());
+    }
+
+    @SuppressLint("CheckResult")
+    private void saveToDb() {
+        Single.create(((SingleOnSubscribe<Bundle>) emitter -> {
+            start = new Date();
+            List<RoomModel> roomModelList = new ArrayList<>();
+            RoomModel roomModel = new RoomModel();
+            for (UserModel model : userModelList) {
+                roomModel.setLogin(model.getLogin());
+                roomModel.setName(model.getName());
+                roomModel.setAvatarUrl(model.getAvatarUrl());
+                roomModelList.add(roomModel);
+            }
+            Orm.getOrm().getDatabase().dao().insertAll(roomModelList);
+            end = new Date();
+            List<RoomModel> temporaryList = Orm.getOrm().getDatabase().dao().getAll();
+            emitter.onSuccess(createBundle(temporaryList, start, end));
+        })).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(MyObserver());
     }
 
     private Bundle createBundle(List<RoomModel> list, Date start, Date end) {
