@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.androidpopularlibraries.room.Orm;
+import com.example.androidpopularlibraries.room.RoomHelper;
 import com.example.androidpopularlibraries.room.RoomModel;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 
@@ -38,16 +39,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView tvInfo;
     private ProgressBar progressBar;
     private Button btnLoad;
-    private Button saveToDbBtn;
-    private Button selectAllFromDbBtn;
-    private Button deleteAllFromDbBtn;
     private List<UserModel> userModelList = new ArrayList<>();
-    private Date start;
-    private Date end;
+    private RoomHelper roomHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        roomHelper = new RoomHelper();
         setContentView(R.layout.activity_main);
         initViews();
         setOnClickListeners();
@@ -55,87 +53,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setOnClickListeners() {
         btnLoad.setOnClickListener(this);
-        saveToDbBtn.setOnClickListener(this);
-        selectAllFromDbBtn.setOnClickListener(this);
-        deleteAllFromDbBtn.setOnClickListener(this);
+        findViewById(R.id.btnSave).setOnClickListener((View v)-> roomHelper
+                .saveAll(userModelList).subscribeWith(MyObserver()));
+        findViewById(R.id.btnSelectAll).setOnClickListener((View v)-> roomHelper
+                .selectAll().subscribeWith(MyObserver()));
+        findViewById(R.id.btnDeleteAll).setOnClickListener((View v)-> roomHelper
+                .deleteAll().subscribeWith(MyObserver()));
     }
 
     private void initViews() {
         tvInfo = findViewById(R.id.tvInfo);
         progressBar = findViewById(R.id.progressBar);
         btnLoad = findViewById(R.id.btnLoad);
-        saveToDbBtn = findViewById(R.id.btnSave);
-        selectAllFromDbBtn = findViewById(R.id.btnSelectAll);
-        deleteAllFromDbBtn = findViewById(R.id.btnDeleteAll);
     }
 
     @Override
     public void onClick(View view) {
         if (!checkNetworkConnection()) return;
         tvInfo.setText("");
-        switch (view.getId()){
-            case R.id.btnLoad:
-                progressBar.setVisibility(View.VISIBLE);
-                downloadUserModel();
-                break;
-            case R.id.btnSave:
-                saveToDb();
-                break;
-            case R.id.btnSelectAll:
-                selectAllFromDb();
-                break;
-            case R.id.btnDeleteAll:
-                deleteAllFromDb();
-                break;
+        if (view.getId() == R.id.btnLoad){
+            progressBar.setVisibility(View.VISIBLE);
+            downloadUserModel();
         }
         hideKeyboard(this, view);
-    }
-
-    @SuppressLint("CheckResult")
-    private void deleteAllFromDb() {
-        Single.create((SingleOnSubscribe<Bundle>) emitter -> {
-            List<RoomModel> roomModelList = Orm.getOrm().getDatabase().dao().getAll();
-            start = new Date();
-            Orm.getOrm().getDatabase().dao().deleteAll();
-            end = new Date();
-            emitter.onSuccess(createBundle(roomModelList, start, end));
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(MyObserver());
-    }
-
-    @SuppressLint("CheckResult")
-    private void selectAllFromDb() {
-        Single.create((SingleOnSubscribe<Bundle>) emitter -> {
-            start = new Date();
-            List<RoomModel> roomModelList = Orm.getOrm().getDatabase().dao().getAll();
-            end = new Date();
-            emitter.onSuccess(createBundle(roomModelList, start, end));
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(MyObserver());
-    }
-
-    @SuppressLint("CheckResult")
-    private void saveToDb() {
-        Single.create(((SingleOnSubscribe<Bundle>) emitter -> {
-            start = new Date();
-            List<RoomModel> roomModelList = new ArrayList<>();
-            RoomModel roomModel = new RoomModel();
-            for (UserModel model : userModelList) {
-                roomModel.setLogin(model.getLogin());
-                roomModel.setName(model.getName());
-                roomModel.setAvatarUrl(model.getAvatarUrl());
-                roomModelList.add(roomModel);
-            }
-            Orm.getOrm().getDatabase().dao().insertAll(roomModelList);
-            end = new Date();
-            List<RoomModel> temporaryList = Orm.getOrm().getDatabase().dao().getAll();
-            emitter.onSuccess(createBundle(temporaryList, start, end));
-        })).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(MyObserver());
-    }
-
-    private Bundle createBundle(List<RoomModel> list, Date start, Date end) {
-        Bundle bundle = new Bundle();
-        bundle.putInt("count", list.size());
-        bundle.putLong("ms", end.getTime() - start.getTime());
-        return bundle;
     }
 
     private DisposableSingleObserver<Bundle> MyObserver() {

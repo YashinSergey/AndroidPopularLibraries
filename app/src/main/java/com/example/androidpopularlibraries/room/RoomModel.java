@@ -11,6 +11,8 @@ public class RoomModel {
 
     @ColumnInfo(name = "login") private String login;
 
+    @ColumnInfo(name = "userId") private String userId;
+
     @ColumnInfo(name = "name") private String name;
 
     @ColumnInfo(name = "avatar_url") private String avatarUrl;
@@ -29,6 +31,14 @@ public class RoomModel {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getName() {
