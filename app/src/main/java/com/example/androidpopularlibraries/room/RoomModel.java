@@ -1,4 +1,4 @@
-package com.example.androidpopularlibraries.model;
+package com.example.androidpopularlibraries.room;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

@@ -1,4 +1,4 @@
-package com.example.androidpopularlibraries.database;
+package com.example.androidpopularlibraries.room;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -6,7 +6,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.androidpopularlibraries.model.RoomModel;
+import com.example.androidpopularlibraries.room.RoomModel;
 
 import java.util.List;
 

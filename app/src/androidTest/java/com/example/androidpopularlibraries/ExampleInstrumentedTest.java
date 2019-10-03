@@ -6,9 +6,9 @@ import androidx.room.Room;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.example.androidpopularlibraries.database.IRoomModelDao;
-import com.example.androidpopularlibraries.database.RoomDB;
-import com.example.androidpopularlibraries.model.RoomModel;
+import com.example.androidpopularlibraries.room.IRoomModelDao;
+import com.example.androidpopularlibraries.room.RoomDB;
+import com.example.androidpopularlibraries.room.RoomModel;
 
 import org.junit.After;
 import org.junit.Before;

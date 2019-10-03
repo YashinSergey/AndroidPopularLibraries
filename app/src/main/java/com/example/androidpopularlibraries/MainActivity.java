@@ -15,9 +15,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.androidpopularlibraries.database.Orm;
-import com.example.androidpopularlibraries.model.RoomModel;
-import com.example.androidpopularlibraries.model.UserModel;
+import com.example.androidpopularlibraries.room.Orm;
+import com.example.androidpopularlibraries.room.RoomModel;
+import com.example.androidpopularlibraries.retrofit.UserModel;
 
 import java.util.ArrayList;
 import java.util.Date;

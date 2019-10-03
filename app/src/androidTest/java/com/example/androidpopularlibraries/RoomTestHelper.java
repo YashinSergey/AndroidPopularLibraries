@@ -1,7 +1,7 @@
 package com.example.androidpopularlibraries;
 
-import com.example.androidpopularlibraries.model.RoomModel;
-import com.example.androidpopularlibraries.model.UserModel;
+import com.example.androidpopularlibraries.room.RoomModel;
+import com.example.androidpopularlibraries.retrofit.UserModel;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.androidpopularlibraries.model;
+package com.example.androidpopularlibraries.retrofit;
 
 import java.util.List;
 
