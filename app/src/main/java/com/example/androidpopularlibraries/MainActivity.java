@@ -15,23 +15,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.androidpopularlibraries.room.Orm;
+import com.example.androidpopularlibraries.dagger.IAppComponent;
+import com.example.androidpopularlibraries.retrofit.IRestApi;
 import com.example.androidpopularlibraries.room.RoomHelper;
-import com.example.androidpopularlibraries.room.RoomModel;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
-import io.reactivex.SingleOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.schedulers.Schedulers;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -40,13 +38,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressBar progressBar;
     private Button btnLoad;
     private List<UserModel> userModelList = new ArrayList<>();
-    private RoomHelper roomHelper;
+    @Inject
+    RoomHelper roomHelper;
+    @Inject
+    Single<List<UserModel>> request;
+    @Inject
+    IRestApi api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        roomHelper = new RoomHelper();
+
+        IAppComponent appComponent = InitializerOfOrmAndDagger.getAppComponent();
+        appComponent.injectToMainActivity(this);
+
         setContentView(R.layout.activity_main);
+        
         initViews();
         setOnClickListeners();
     }
@@ -54,11 +61,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void setOnClickListeners() {
         btnLoad.setOnClickListener(this);
         findViewById(R.id.btnSave).setOnClickListener((View v)-> roomHelper
-                .saveAll(userModelList).subscribeWith(MyObserver()));
+                .saveAll(userModelList).subscribeWith(myObserver()));
         findViewById(R.id.btnSelectAll).setOnClickListener((View v)-> roomHelper
-                .selectAll().subscribeWith(MyObserver()));
+                .selectAll().subscribeWith(myObserver()));
         findViewById(R.id.btnDeleteAll).setOnClickListener((View v)-> roomHelper
-                .deleteAll().subscribeWith(MyObserver()));
+                .deleteAll().subscribeWith(myObserver()));
     }
 
     private void initViews() {
@@ -73,12 +80,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvInfo.setText("");
         if (view.getId() == R.id.btnLoad){
             progressBar.setVisibility(View.VISIBLE);
-            downloadUserModel();
+            downloadUserModel(request);
         }
         hideKeyboard(this, view);
     }
 
-    private DisposableSingleObserver<Bundle> MyObserver() {
+    private DisposableSingleObserver<Bundle> myObserver() {
         return new DisposableSingleObserver<Bundle>() {
             @Override
             protected void onStart() {
@@ -113,37 +120,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
-    private void downloadUserModel() {
-        GitHubData.getGitHubData().getAPI().loadUsers().retry(2)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<List<UserModel>>() {
-                    Disposable disposable;
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        disposable = d;
+    private void downloadUserModel(Single<List<UserModel>> call) {
+        call.subscribe(new SingleObserver<List<UserModel>>() {
+                Disposable disposable;
+                @Override
+                public void onSubscribe(Disposable d) {
+                    disposable = d;
+                }
+                @Override
+                public void onSuccess(List<UserModel> list) {
+                    tvInfo.append("\n Size = " + list.size() + "\n---------------------");
+                    for (UserModel model : list) {
+                        userModelList.add(model);
+                        tvInfo.append(
+                                "\nLogin = " + model.getLogin() +
+                                        "\nName = " + model.getName() +
+                                        "\nURI = " + model.getAvatarUrl() +
+                                        "\n-----------------");
                     }
-                    @Override
-                    public void onSuccess(List<UserModel> list) {
-                        tvInfo.append("\n Size = " + list.size() + "\n---------------------");
-                        for (UserModel model : list) {
-                            userModelList.add(model);
-                            tvInfo.append(
-                                    "\nLogin = " + model.getLogin() +
-                                            "\nName = " + model.getName() +
-                                            "\nURI = " + model.getAvatarUrl() +
-                                            "\n-----------------");
-                        }
-                        progressBar.setVisibility(View.GONE);
-                        disposable.dispose();
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        progressBar.setVisibility(View.GONE);
-                        disposable.dispose();
-                    }
-                });
+                    progressBar.setVisibility(View.GONE);
+                    disposable.dispose();
+                }
+                @Override
+                public void onError(Throwable e) {
+                    e.printStackTrace();
+                    progressBar.setVisibility(View.GONE);
+                    disposable.dispose();
+                }
+            });
     }
 
     public static void hideKeyboard(Context context, View view) {

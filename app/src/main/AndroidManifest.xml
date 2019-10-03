@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".room.Orm"
+        android:name=".InitializerOfOrmAndDagger"
         tools:ignore="AllowBackup">
         <activity android:name=".MainActivity">
             <intent-filter>
