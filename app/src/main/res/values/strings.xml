@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Android Popular Libraries</string>
     <string name="load">Load</string>
-    <string name="save_to_db">Save to db</string>
+    <string name="save_to_room_db">Save to room db</string>
+    <string name="save_to_sugar_db">Save to sugar db</string>
     <string name="select_all">Select all</string>
     <string name="delete_all">Delete all</string>
 </resources>

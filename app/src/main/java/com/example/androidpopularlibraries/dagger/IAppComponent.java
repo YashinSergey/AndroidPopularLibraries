@@ -7,7 +7,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {DaggerNetModule.class, DaggerRoomModule.class})
+@Component(modules = {DaggerNetModule.class, DaggerRoomModule.class, DaggerSugarModule.class})
 public interface IAppComponent {
     void injectToMainActivity(MainActivity activity);
 }

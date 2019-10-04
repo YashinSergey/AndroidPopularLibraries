@@ -18,7 +18,7 @@
 
 
     <LinearLayout
-        android:id="@+id/buttonsLayout"
+        android:id="@+id/roomButtonsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnLoad"
@@ -28,15 +28,15 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btnSave"
+            android:id="@+id/btnRoomSave"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
             style="@android:style/Animation"
-            android:text="@string/save_to_db" />
+            android:text="@string/save_to_room_db" />
 
         <Button
-            android:id="@+id/btnSelectAll"
+            android:id="@+id/btnRoomSelectAll"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -44,7 +44,43 @@
             android:text="@string/select_all" />
 
         <Button
-            android:id="@+id/btnDeleteAll"
+            android:id="@+id/btnRoomDeleteAll"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            style="@android:style/Animation"
+            android:text="@string/delete_all" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sugarButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/roomButtonsLayout"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="0dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnSugarSave"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            style="@android:style/Animation"
+            android:text="@string/save_to_sugar_db" />
+
+        <Button
+            android:id="@+id/btnSugarSelectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            style="@android:style/Animation"
+            android:text="@string/select_all" />
+
+        <Button
+            android:id="@+id/btnSugarDeleteAll"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -57,7 +93,7 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonsLayout"
+        android:layout_below="@+id/sugarButtonsLayout"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp">
 

@@ -19,6 +19,8 @@ import com.example.androidpopularlibraries.dagger.IAppComponent;
 import com.example.androidpopularlibraries.retrofit.IRestApi;
 import com.example.androidpopularlibraries.room.RoomHelper;
 import com.example.androidpopularlibraries.retrofit.UserModel;
+import com.example.androidpopularlibraries.sugar.SugarHelper;
+import com.orm.SugarContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Inject
     RoomHelper roomHelper;
     @Inject
+    SugarHelper sugarHelper;
+    @Inject
     Single<List<UserModel>> request;
     @Inject
     IRestApi api;
@@ -53,18 +57,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         appComponent.injectToMainActivity(this);
 
         setContentView(R.layout.activity_main);
-        
+
         initViews();
         setOnClickListeners();
+        SugarContext.init(this);
     }
 
     private void setOnClickListeners() {
         btnLoad.setOnClickListener(this);
-        findViewById(R.id.btnSave).setOnClickListener((View v)-> roomHelper
+        findViewById(R.id.btnRoomSave).setOnClickListener((View v)-> roomHelper
                 .saveAll(userModelList).subscribeWith(myObserver()));
-        findViewById(R.id.btnSelectAll).setOnClickListener((View v)-> roomHelper
+        findViewById(R.id.btnRoomSelectAll).setOnClickListener((View v)-> roomHelper
                 .selectAll().subscribeWith(myObserver()));
-        findViewById(R.id.btnDeleteAll).setOnClickListener((View v)-> roomHelper
+        findViewById(R.id.btnRoomDeleteAll).setOnClickListener((View v)-> roomHelper
+                .deleteAll().subscribeWith(myObserver()));
+        findViewById(R.id.btnSugarSave).setOnClickListener((View v)-> sugarHelper
+                .saveAll(userModelList).subscribeWith(myObserver()));
+        findViewById(R.id.btnSugarSelectAll).setOnClickListener((View v)-> sugarHelper
+                .selectAll().subscribeWith(myObserver()));
+        findViewById(R.id.btnSugarDeleteAll).setOnClickListener((View v)-> sugarHelper
                 .deleteAll().subscribeWith(myObserver()));
     }
 
