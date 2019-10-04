@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Single<List<UserModel>> request;
     @Inject
     IRestApi api;
+    @Inject
+    NetworkInfo networkInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,11 +122,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private boolean checkNetworkConnection() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        assert connectivityManager != null;
-        NetworkInfo networkinfo = connectivityManager.getActiveNetworkInfo();
-
-        if (networkinfo == null || !networkinfo.isConnected()) {
+        if (networkInfo == null || !networkInfo.isConnected()) {
             Toast.makeText(this, "Подключите интернет", Toast.LENGTH_SHORT).show();
             return false;
         }
