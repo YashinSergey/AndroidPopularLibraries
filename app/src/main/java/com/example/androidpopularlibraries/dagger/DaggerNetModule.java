@@ -1,5 +1,9 @@
 package com.example.androidpopularlibraries.dagger;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import com.example.androidpopularlibraries.retrofit.IRestApi;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 
@@ -16,6 +20,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class DaggerNetModule {
+
+    private final Context context;
+
+    public DaggerNetModule(Context context) {
+        this.context = context;
+    }
 
     @Provides
     Retrofit createRetrofitAdapter() {
@@ -34,5 +44,13 @@ public class DaggerNetModule {
     @Provides
     Single<List<UserModel>> getCall(IRestApi api) {
         return api.loadUsers().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Provides
+    NetworkInfo getNetworkInfo() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert connectivityManager != null;
+        return connectivityManager.getActiveNetworkInfo();
     }
 }

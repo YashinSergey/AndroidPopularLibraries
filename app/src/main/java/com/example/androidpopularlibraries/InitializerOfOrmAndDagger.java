@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.room.Room;
 
 import com.example.androidpopularlibraries.dagger.DaggerIAppComponent;
+import com.example.androidpopularlibraries.dagger.DaggerNetModule;
 import com.example.androidpopularlibraries.dagger.IAppComponent;
 import com.example.androidpopularlibraries.room.RoomDB;
 
@@ -21,7 +22,9 @@ public class InitializerOfOrmAndDagger extends Application {
         database = Room.databaseBuilder(getApplicationContext(), RoomDB.class, DB_NAME).build();
         orm = this;
 
-        appComponent = DaggerIAppComponent.create();
+        appComponent = DaggerIAppComponent.builder()
+                .daggerNetModule(new DaggerNetModule(getApplicationContext()))
+                .build();
     }
 
     public RoomDB getDatabase() {
