@@ -21,16 +21,24 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class DaggerNetModule {
 
-    private final Context context;
+    private Context context = null;
+
+    public DaggerNetModule() {
+    }
 
     public DaggerNetModule(Context context) {
         this.context = context;
     }
 
     @Provides
-    Retrofit createRetrofitAdapter() {
+    public String provideEndpoint() {
+        return "https://api.github.com/";
+    }
+
+    @Provides
+    Retrofit createRetrofitAdapter(String provider) {
         return new Retrofit.Builder()
-                .baseUrl("https://api.github.com/") // Обратить внимание на слеш в базовом адресе
+                .baseUrl(provider) // Обратить внимание на слеш в базовом адресе
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();

@@ -40,12 +40,15 @@ dependencies {
 
     implementation 'com.github.satyan:sugar:1.4'
 
-    implementation 'com.google.dagger:dagger:2.10'
+    implementation 'com.google.dagger:dagger:2.21'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.10'
 
 
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'org.mockito:mockito-android:3.1.0'
+    androidTestImplementation 'com.squareup.okhttp3:mockwebserver:3.3.0'
+    
+    androidTestAnnotationProcessor 'com.google.dagger:dagger-compiler:2.10'
+
 }

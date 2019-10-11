@@ -1,6 +1,5 @@
-package com.example.androidpopularlibraries;
+package com.example.androidpopularlibraries.room;
 
-import com.example.androidpopularlibraries.room.RoomModel;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 
 import java.util.ArrayList;
