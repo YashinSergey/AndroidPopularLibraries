@@ -9,11 +9,8 @@ import com.example.androidpopularlibraries.dagger.DaggerRoomModule;
 import com.example.androidpopularlibraries.dagger.DaggerSugarModule;
 import com.example.androidpopularlibraries.presenter.DaggerIPresenterComponent;
 import com.example.androidpopularlibraries.presenter.IPresenterComponent;
-import com.example.androidpopularlibraries.retrofit.UserModel;
 import com.example.androidpopularlibraries.room.RoomDB;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class Initializer extends Application {
 
@@ -22,7 +19,6 @@ public class Initializer extends Application {
     private static Initializer initializer;
     private static IAppComponent appComponent;
     private static IPresenterComponent iPresenterComponent;
-    private List<UserModel> list = new ArrayList<>();
 
     @Override
     public void onCreate() {

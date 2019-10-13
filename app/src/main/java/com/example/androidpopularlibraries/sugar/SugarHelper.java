@@ -18,8 +18,7 @@ public class SugarHelper {
     private Date start;
     private Date finish;
 
-    public SugarHelper(){
-    }
+    public SugarHelper(){}
 
     public Single<Bundle> saveAll() {
         return Single.create((SingleOnSubscribe<Bundle>) emitter -> {
@@ -27,7 +26,7 @@ public class SugarHelper {
                 start = new Date();
                 for (UserModel item : Presenter.userList) {
                     SugarModel sugarModel = new SugarModel(item.getLogin(),
-                            item.getId().toString(), item.getAvatarUrl());
+                            item.getAvatarUrl(), item.getId().toString());
                     sugarModel.save();
                 }
                 finish = new Date();

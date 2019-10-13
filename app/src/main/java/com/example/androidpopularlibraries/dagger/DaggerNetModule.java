@@ -8,6 +8,7 @@ import com.example.androidpopularlibraries.retrofit.IRestApi;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 
 import java.util.List;
+import java.util.Objects;
 
 import dagger.Module;
 import dagger.Provides;
@@ -21,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class DaggerNetModule {
 
-    private Context context = null;
+    private Context context;
 
     public DaggerNetModule(Context context) {
         this.context = context;
@@ -55,6 +56,6 @@ public class DaggerNetModule {
     NetworkInfo getNetworkInfo() {
         ConnectivityManager connectivityManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
-        return connectivityManager.getActiveNetworkInfo();
+        return Objects.requireNonNull(connectivityManager).getActiveNetworkInfo();
     }
 }

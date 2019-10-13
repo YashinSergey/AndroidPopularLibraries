@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 
-import com.example.androidpopularlibraries.presenter.IPresenterComponent;
 import com.example.androidpopularlibraries.retrofit.IRestApi;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 import com.example.androidpopularlibraries.room.RoomHelper;
@@ -38,7 +37,6 @@ public class Presenter {
     @Inject
     NetworkInfo networkInfo;
 
-
     public Presenter(IPresenterComponent component) {
         component.injectToPresenter(this);
     }
@@ -47,7 +45,6 @@ public class Presenter {
         this.showInfoObserver = showInfoObserver;
         this.progressBarObserver = progressBarObserver;
     }
-
 
     public DisposableSingleObserver<Bundle> createObserver() {
         return new DisposableSingleObserver<Bundle>() {

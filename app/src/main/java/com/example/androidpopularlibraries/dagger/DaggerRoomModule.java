@@ -1,9 +1,6 @@
 package com.example.androidpopularlibraries.dagger;
 
-import com.example.androidpopularlibraries.retrofit.UserModel;
 import com.example.androidpopularlibraries.room.RoomHelper;
-
-import java.util.List;
 
 import javax.inject.Singleton;
 
@@ -12,7 +9,6 @@ import dagger.Provides;
 
 @Module
 public class DaggerRoomModule {
-
 
     public DaggerRoomModule() {}
 
