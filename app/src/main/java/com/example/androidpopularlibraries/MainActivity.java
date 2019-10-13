@@ -142,8 +142,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         userModelList.add(model);
                         tvInfo.append(
                                 "\nLogin = " + model.getLogin() +
-                                        "\nName = " + model.getName() +
                                         "\nURI = " + model.getAvatarUrl() +
+                                        "\nId = " + model.getId() +
                                         "\n-----------------");
                     }
                     progressBar.setVisibility(View.GONE);

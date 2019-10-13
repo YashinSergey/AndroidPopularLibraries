@@ -23,9 +23,6 @@ public class DaggerNetModule {
 
     private Context context = null;
 
-    public DaggerNetModule() {
-    }
-
     public DaggerNetModule(Context context) {
         this.context = context;
     }
@@ -58,7 +55,6 @@ public class DaggerNetModule {
     NetworkInfo getNetworkInfo() {
         ConnectivityManager connectivityManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
-        assert connectivityManager != null;
         return connectivityManager.getActiveNetworkInfo();
     }
 }
