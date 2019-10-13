@@ -89,10 +89,10 @@ public class Presenter {
                         .append("\n---------------------");
                 for (UserModel model : list) {
                     userList.add(model);
-                    strBuilder.append("\nLogin = ")
-                            .append(model.getLogin()).append("\nURI = ")
-                            .append(model.getAvatarUrl()).append("\nId = ")
-                            .append(model.getId()).append("\n-----------------");
+                    strBuilder.append("\nLogin = ").append(model.getLogin())
+                            .append("\nURI = ").append(model.getAvatarUrl())
+                            .append("\nId = ").append(model.getId())
+                            .append("\n-----------------");
                 }
                 showInfoObserver.onNext(strBuilder.toString());
                 progressBarObserver.onNext(false);
