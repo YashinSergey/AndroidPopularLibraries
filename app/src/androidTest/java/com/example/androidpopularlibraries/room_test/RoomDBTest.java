@@ -1,10 +1,14 @@
-package com.example.androidpopularlibraries.room;
+package com.example.androidpopularlibraries.room_test;
 
 import android.content.Context;
 
 import androidx.room.Room;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
+
+import com.example.androidpopularlibraries.room.IRoomModelDao;
+import com.example.androidpopularlibraries.room.RoomDB;
+import com.example.androidpopularlibraries.room.RoomModel;
 
 import org.junit.After;
 import org.junit.Before;
