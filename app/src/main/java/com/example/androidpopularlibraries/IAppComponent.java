@@ -1,13 +1,14 @@
-package com.example.androidpopularlibraries.dagger;
+package com.example.androidpopularlibraries;
 
 import com.example.androidpopularlibraries.MainActivity;
+import com.example.androidpopularlibraries.dagger.DaggerPresenterModule;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
 
 @Singleton
-@Component(modules = {DaggerNetModule.class, DaggerRoomModule.class, DaggerSugarModule.class})
+@Component(modules = {DaggerPresenterModule.class})
 public interface IAppComponent {
     void injectToMainActivity(MainActivity activity);
 }
