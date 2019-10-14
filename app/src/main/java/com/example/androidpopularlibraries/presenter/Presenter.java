@@ -32,8 +32,6 @@ public class Presenter {
     @Inject
     Single<List<UserModel>> request;
     @Inject
-    IRestApi api;
-    @Inject
     Boolean networkConnection;
 
     public Presenter(IPresenterComponent component) {
