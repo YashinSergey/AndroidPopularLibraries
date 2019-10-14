@@ -1,7 +1,6 @@
 package com.example.androidpopularlibraries.presenter;
 
 import android.annotation.SuppressLint;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import com.example.androidpopularlibraries.retrofit.IRestApi;
@@ -35,7 +34,7 @@ public class Presenter {
     @Inject
     IRestApi api;
     @Inject
-    NetworkInfo networkInfo;
+    Boolean networkConnection;
 
     public Presenter(IPresenterComponent component) {
         component.injectToPresenter(this);
@@ -73,7 +72,7 @@ public class Presenter {
         showInfoObserver.onNext("");
         userList.clear();
 
-        if (!checkNetworkConnection()) return;
+        if (!networkConnection) return;
 
         request.subscribe(new SingleObserver<List<UserModel>>() {
             Disposable disposable;
@@ -106,10 +105,6 @@ public class Presenter {
                 disposable.dispose();
             }
         });
-    }
-
-    private boolean checkNetworkConnection() {
-        return networkInfo != null && networkInfo.isConnected();
     }
 
     public void unbindView(){

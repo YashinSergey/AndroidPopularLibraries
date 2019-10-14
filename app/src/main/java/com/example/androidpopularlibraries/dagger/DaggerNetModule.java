@@ -58,4 +58,9 @@ public class DaggerNetModule {
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         return Objects.requireNonNull(connectivityManager).getActiveNetworkInfo();
     }
+
+    @Provides
+    boolean checkNetworkConnection(NetworkInfo networkInfo) {
+        return networkInfo != null && networkInfo.isConnected();
+    }
 }
