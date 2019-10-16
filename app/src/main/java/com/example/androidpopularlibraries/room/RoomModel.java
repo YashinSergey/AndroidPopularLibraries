@@ -4,8 +4,10 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.example.androidpopularlibraries.IDBModel;
+
 @Entity
-public class RoomModel {
+public class RoomModel implements IDBModel {
 
     @PrimaryKey(autoGenerate = true) private int rmId;
 

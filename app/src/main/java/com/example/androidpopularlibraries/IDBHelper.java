@@ -10,11 +10,11 @@ public interface IDBHelper {
     Single<Tester> selectAll();
     Single<Tester> deleteAll();
 
-    class Tester<T extends IDBModel> {
+    class Tester <T extends IDBModel> {
         private long time;
         private int count;
 
-        public Tester(List<T> list, long start, long finish){
+        public Tester(List<IDBModel> list, long start, long finish){
             this.time = finish - start;
             this.count = list.size();
         }
