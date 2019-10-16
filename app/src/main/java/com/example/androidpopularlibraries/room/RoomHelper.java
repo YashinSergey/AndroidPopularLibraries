@@ -2,7 +2,8 @@ package com.example.androidpopularlibraries.room;
 
 import android.os.Bundle;
 
-import com.example.androidpopularlibraries.InitializerOfOrmAndDagger;
+import com.example.androidpopularlibraries.Initializer;
+import com.example.androidpopularlibraries.presenter.Presenter;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 
 import java.util.ArrayList;
@@ -21,20 +22,20 @@ public class RoomHelper {
 
     public RoomHelper(){}
 
-    public Single<Bundle> saveAll(List<UserModel> list){
+    public Single<Bundle> saveAll(){
         return Single.create(((SingleOnSubscribe<Bundle>) emitter -> {
             start = new Date();
             List<RoomModel> roomModelList = new ArrayList<>();
             RoomModel roomModel = new RoomModel();
-            for (UserModel model : list) {
+            for (UserModel model : Presenter.userList) {
                 roomModel.setLogin(model.getLogin());
-                roomModel.setName(model.getName());
                 roomModel.setAvatarUrl(model.getAvatarUrl());
+                roomModel.setUserId(model.getId().toString());
                 roomModelList.add(roomModel);
             }
-            InitializerOfOrmAndDagger.getOrm().getDatabase().dao().insertAll(roomModelList);
+            Initializer.getInitializer().getDatabase().dao().insertAll(roomModelList);
             finish = new Date();
-            List<RoomModel> temporaryList = InitializerOfOrmAndDagger.getOrm().getDatabase().dao().getAll();
+            List<RoomModel> temporaryList = Initializer.getInitializer().getDatabase().dao().getAll();
             emitter.onSuccess(createBundle(temporaryList, start, finish));
         })).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
@@ -42,7 +43,7 @@ public class RoomHelper {
     public Single<Bundle> selectAll(){
         return Single.create((SingleOnSubscribe<Bundle>) emitter -> {
             start = new Date();
-            List<RoomModel> roomModelList = InitializerOfOrmAndDagger.getOrm().getDatabase().dao().getAll();
+            List<RoomModel> roomModelList = Initializer.getInitializer().getDatabase().dao().getAll();
             finish = new Date();
             emitter.onSuccess(createBundle(roomModelList, start, finish));
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
@@ -50,9 +51,9 @@ public class RoomHelper {
 
     public Single<Bundle> deleteAll(){
         return Single.create((SingleOnSubscribe<Bundle>) emitter -> {
-            List<RoomModel> roomModelList = InitializerOfOrmAndDagger.getOrm().getDatabase().dao().getAll();
+            List<RoomModel> roomModelList = Initializer.getInitializer().getDatabase().dao().getAll();
             start = new Date();
-            InitializerOfOrmAndDagger.getOrm().getDatabase().dao().deleteAll();
+            Initializer.getInitializer().getDatabase().dao().deleteAll();
             finish = new Date();
             emitter.onSuccess(createBundle(roomModelList, start, finish));
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());

@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme"
-        android:name=".InitializerOfOrmAndDagger"
+        android:name=".Initializer"
         tools:ignore="AllowBackup"
         tools:targetApi="m">
         <activity android:name=".MainActivity">

@@ -10,6 +10,8 @@ import dagger.Provides;
 @Module
 public class DaggerRoomModule {
 
+    public DaggerRoomModule() {}
+
     @Singleton
     @Provides
     RoomHelper getRoomHelper() {
