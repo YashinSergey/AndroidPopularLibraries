@@ -1,7 +1,5 @@
 package com.example.androidpopularlibraries.sugar;
 
-import android.os.Bundle;
-
 import com.example.androidpopularlibraries.IDBHelper;
 import com.example.androidpopularlibraries.presenter.Presenter;
 import com.example.androidpopularlibraries.retrofit.UserModel;
@@ -22,8 +20,8 @@ public class SugarHelper implements IDBHelper {
     public SugarHelper(){}
 
     @Override
-    public Single<Bundle> saveAll() {
-        return Single.create((SingleOnSubscribe<Bundle>) emitter -> {
+    public Single<Tester> saveAll() {
+        return Single.create((SingleOnSubscribe<Tester>) emitter -> {
             try {
                 start = new Date().getTime();
                 for (UserModel item : Presenter.userList) {
@@ -33,7 +31,7 @@ public class SugarHelper implements IDBHelper {
                 }
                 finish = new Date().getTime();
                 List<SugarModel> tempList = SugarModel.listAll(SugarModel.class);
-                emitter.onSuccess(createBundle(tempList, start, finish));
+                emitter.onSuccess(new Tester(tempList, start, finish));
             } catch (Exception e) {
                 emitter.onError(e);
             }
@@ -42,13 +40,13 @@ public class SugarHelper implements IDBHelper {
     }
 
     @Override
-    public Single<Bundle> selectAll(){
-        return Single.create((SingleOnSubscribe<Bundle>) emitter -> {
+    public Single<Tester> selectAll(){
+        return Single.create((SingleOnSubscribe<Tester>) emitter -> {
             try {
                 start = new Date().getTime();
                 List<SugarModel> tempList = SugarModel.listAll(SugarModel.class);
                 finish = new Date().getTime();
-                emitter.onSuccess(createBundle(tempList, start, finish));
+                emitter.onSuccess(new Tester(tempList, start, finish));
             } catch (Exception e) {
                 emitter.onError(e);
             }
@@ -57,14 +55,14 @@ public class SugarHelper implements IDBHelper {
     }
 
     @Override
-    public Single<Bundle> deleteAll(){
-        return Single.create((SingleOnSubscribe<Bundle>) emitter -> {
+    public Single<Tester> deleteAll(){
+        return Single.create((SingleOnSubscribe<Tester>) emitter -> {
             try {
                 List<SugarModel> tempList = SugarModel.listAll(SugarModel.class);
                 start = new Date().getTime();
                 SugarModel.deleteAll(SugarModel.class);
                 finish = new Date().getTime();
-                emitter.onSuccess(createBundle(tempList, start, finish));
+                emitter.onSuccess(new Tester(tempList, start, finish));
             } catch (Exception e) {
                 emitter.onError(e);
             }

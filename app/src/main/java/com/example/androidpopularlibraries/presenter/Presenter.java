@@ -1,8 +1,8 @@
 package com.example.androidpopularlibraries.presenter;
 
 import android.annotation.SuppressLint;
-import android.os.Bundle;
 
+import com.example.androidpopularlibraries.IDBHelper;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 import com.example.androidpopularlibraries.room.RoomHelper;
 import com.example.androidpopularlibraries.sugar.SugarHelper;
@@ -43,8 +43,8 @@ public class Presenter {
         this.progressBarSubject.subscribe(progressBarObserver);
     }
 
-    public DisposableSingleObserver<Bundle> createObserver() {
-        return new DisposableSingleObserver<Bundle>() {
+    public DisposableSingleObserver<IDBHelper.Tester> createObserver() {
+        return new DisposableSingleObserver<IDBHelper.Tester>() {
             @Override
             protected void onStart() {
                 super.onStart();
@@ -52,10 +52,10 @@ public class Presenter {
                 showInfoSubject.onNext("");
             }
             @Override
-            public void onSuccess(Bundle bundle) {
+            public void onSuccess(IDBHelper.Tester timer) {
                 progressBarSubject.onNext(false);
-                showInfoSubject.onNext("Quantity = " + bundle.getInt("count") +
-                        "\nTime in ms = " + bundle.getLong("ms"));
+                showInfoSubject.onNext("Quantity = " + timer.getCount() +
+                        "\nTime in ms = " + timer.getTime());
             }
             @SuppressLint("SetTextI18n")
             @Override

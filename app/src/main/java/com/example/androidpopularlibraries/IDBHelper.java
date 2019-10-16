@@ -1,21 +1,30 @@
 package com.example.androidpopularlibraries;
 
-import android.os.Bundle;
-
 import java.util.List;
 
 import io.reactivex.Single;
 
-public interface IDBHelper <T extends IDBModel>{
+public interface IDBHelper {
 
-    Single<Bundle> saveAll();
-    Single<Bundle> selectAll();
-    Single<Bundle> deleteAll();
+    Single<Tester> saveAll();
+    Single<Tester> selectAll();
+    Single<Tester> deleteAll();
 
-    default Bundle createBundle(List<T> list, long start, long finish) {
-        Bundle bundle = new Bundle();
-        bundle.putInt("count", list.size());
-        bundle.putLong("ms", finish - start);
-        return bundle;
+    class Tester<T extends IDBModel> {
+        private long time;
+        private int count;
+
+        public Tester(List<T> list, long start, long finish){
+            this.time = finish - start;
+            this.count = list.size();
+        }
+
+        public long getTime() {
+            return time;
+        }
+
+        public int getCount() {
+            return count;
+        }
     }
 }
