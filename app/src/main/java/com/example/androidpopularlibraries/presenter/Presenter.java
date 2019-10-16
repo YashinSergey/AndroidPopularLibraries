@@ -3,7 +3,6 @@ package com.example.androidpopularlibraries.presenter;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 
-import com.example.androidpopularlibraries.retrofit.IRestApi;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 import com.example.androidpopularlibraries.room.RoomHelper;
 import com.example.androidpopularlibraries.sugar.SugarHelper;
@@ -18,13 +17,14 @@ import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.subjects.PublishSubject;
 
 public class Presenter {
 
     public static List<UserModel> userList = new ArrayList<>();
 
-    private DisposableObserver<String> showInfoObserver;
-    private DisposableObserver<Boolean> progressBarObserver;
+    private PublishSubject<String> showInfoSubject = PublishSubject.create();
+    private PublishSubject<Boolean> progressBarSubject = PublishSubject.create();
     @Inject
     public RoomHelper roomHelper;
     @Inject
@@ -39,8 +39,8 @@ public class Presenter {
     }
 
     public void bindView(DisposableObserver<String> showInfoObserver, DisposableObserver<Boolean> progressBarObserver) {
-        this.showInfoObserver = showInfoObserver;
-        this.progressBarObserver = progressBarObserver;
+        this.showInfoSubject.subscribe(showInfoObserver);
+        this.progressBarSubject.subscribe(progressBarObserver);
     }
 
     public DisposableSingleObserver<Bundle> createObserver() {
@@ -48,26 +48,26 @@ public class Presenter {
             @Override
             protected void onStart() {
                 super.onStart();
-                progressBarObserver.onNext(true);
-                showInfoObserver.onNext("");
+                progressBarSubject.onNext(true);
+                showInfoSubject.onNext("");
             }
             @Override
             public void onSuccess(Bundle bundle) {
-                progressBarObserver.onNext(false);
-                showInfoObserver.onNext("Quantity = " + bundle.getInt("count") +
+                progressBarSubject.onNext(false);
+                showInfoSubject.onNext("Quantity = " + bundle.getInt("count") +
                         "\nTime in ms = " + bundle.getLong("ms"));
             }
             @SuppressLint("SetTextI18n")
             @Override
             public void onError(Throwable e) {
-                progressBarObserver.onNext(false);
-                showInfoObserver.onNext("DB Error: " + e.getMessage());
+                progressBarSubject.onNext(false);
+                showInfoSubject.onNext("DB Error: " + e.getMessage());
             }
         };
     }
 
     public void downloadUserModel() {
-        showInfoObserver.onNext("");
+        showInfoSubject.onNext("");
         userList.clear();
 
         if (!networkConnection) return;
@@ -77,7 +77,7 @@ public class Presenter {
             StringBuilder strBuilder = new StringBuilder();
             @Override
             public void onSubscribe(Disposable d) {
-                progressBarObserver.onNext(true);
+                progressBarSubject.onNext(true);
                 disposable = d;
             }
             @Override
@@ -91,22 +91,22 @@ public class Presenter {
                             .append("\nId = ").append(model.getId())
                             .append("\n-----------------");
                 }
-                showInfoObserver.onNext(strBuilder.toString());
-                progressBarObserver.onNext(false);
+                showInfoSubject.onNext(strBuilder.toString());
+                progressBarSubject.onNext(false);
                 disposable.dispose();
             }
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
-                showInfoObserver.onError(e);
-                progressBarObserver.onNext(false);
+                showInfoSubject.onError(e);
+                progressBarSubject.onNext(false);
                 disposable.dispose();
             }
         });
     }
 
     public void unbindView(){
-        showInfoObserver.dispose();
-        progressBarObserver.dispose();
+        showInfoSubject.onComplete();
+        progressBarSubject.onComplete();
     }
 }
