@@ -2,6 +2,7 @@ package com.example.androidpopularlibraries.sugar;
 
 import android.os.Bundle;
 
+import com.example.androidpopularlibraries.presenter.Presenter;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 
 import java.util.Date;
@@ -17,13 +18,15 @@ public class SugarHelper {
     private Date start;
     private Date finish;
 
-    public Single<Bundle> saveAll(List<UserModel> list) {
+    public SugarHelper(){}
+
+    public Single<Bundle> saveAll() {
         return Single.create((SingleOnSubscribe<Bundle>) emitter -> {
             try {
                 start = new Date();
-                for (UserModel item : list) {
+                for (UserModel item : Presenter.userList) {
                     SugarModel sugarModel = new SugarModel(item.getLogin(),
-                            item.getId().toString(), item.getAvatarUrl());
+                            item.getAvatarUrl(), item.getId().toString());
                     sugarModel.save();
                 }
                 finish = new Date();

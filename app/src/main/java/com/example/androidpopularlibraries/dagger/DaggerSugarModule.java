@@ -9,6 +9,8 @@ import dagger.Provides;
 @Module
 public class DaggerSugarModule {
 
+    public DaggerSugarModule(){}
+
     @Singleton
     @Provides
     SugarHelper getSugarHelper(){

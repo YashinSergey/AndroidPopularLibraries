@@ -10,13 +10,10 @@ public class SugarModel extends SugarRecord{
 
     public SugarModel(){}
 
-    public SugarModel(String login, String userId, String avatarUrl){
+    SugarModel(String login, String avatarUrl, String userId){
         this.login = login;
-        this.userId = userId;
         this.avatarUrl = avatarUrl;
+        this.userId = userId;
     }
 
-    public String getLogin() {
-        return login;
-    }
 }

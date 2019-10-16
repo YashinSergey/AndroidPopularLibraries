@@ -1,10 +1,10 @@
-package com.example.androidpopularlibraries;
+package com.example.androidpopularlibraries.room_test;
 
 import android.content.Context;
 
 import androidx.room.Room;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.example.androidpopularlibraries.room.IRoomModelDao;
 import com.example.androidpopularlibraries.room.RoomDB;
@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 @RunWith(AndroidJUnit4.class)
-public class ExampleInstrumentedTest {
+public class RoomDBTest {
 
     private static RoomDB database;
     private IRoomModelDao usersDao;
