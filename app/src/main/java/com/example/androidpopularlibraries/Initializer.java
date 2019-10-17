@@ -23,7 +23,7 @@ public class Initializer extends Application {
     private static IAppComponent appComponent;
     private static IPresenterComponent iPresenterComponent;
 
-    public List<UserModel> userList = new ArrayList<>();
+    private List<UserModel> userList = new ArrayList<>();
 
     @Override
     public void onCreate() {
