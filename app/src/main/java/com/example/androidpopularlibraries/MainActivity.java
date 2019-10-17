@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onError(Throwable e) {
+                progressBar.setVisibility(View.GONE);
                 tvInfo.setText("");
                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
