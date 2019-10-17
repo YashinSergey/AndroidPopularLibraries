@@ -1,6 +1,8 @@
 package com.example.androidpopularlibraries.presenter;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.widget.Toast;
 
 import com.example.androidpopularlibraries.IDBHelper;
 import com.example.androidpopularlibraries.Initializer;
@@ -31,14 +33,17 @@ public class Presenter {
     Single<List<UserModel>> request;
     @Inject
     Boolean networkConnection;
+    private Context context;
 
     public Presenter(IPresenterComponent component) {
         component.injectToPresenter(this);
     }
 
-    public void bindView(DisposableObserver<String> showInfoObserver, DisposableObserver<Boolean> progressBarObserver) {
+    public void bindView(DisposableObserver<String> showInfoObserver,
+                         DisposableObserver<Boolean> progressBarObserver, Context context) {
         this.showInfoSubject.subscribe(showInfoObserver);
         this.progressBarSubject.subscribe(progressBarObserver);
+        this.context = context;
     }
 
     public DisposableSingleObserver<IDBHelper.Tester> createObserver() {
@@ -68,11 +73,13 @@ public class Presenter {
         showInfoSubject.onNext("");
         Initializer.getInitializer().getUserList().clear();
 
-        if (!networkConnection) return;
+        if (!networkConnection) {
+            Toast.makeText(context, "Internet connection required", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         request.subscribe(new SingleObserver<List<UserModel>>() {
             Disposable disposable;
-            StringBuilder strBuilder = new StringBuilder();
             @Override
             public void onSubscribe(Disposable d) {
                 progressBarSubject.onNext(true);
@@ -80,16 +87,7 @@ public class Presenter {
             }
             @Override
             public void onSuccess(List<UserModel> list) {
-                strBuilder.append("\n Size = ").append(list.size())
-                        .append("\n---------------------");
-                for (UserModel model : list) {
-                    Initializer.getInitializer().getUserList().add(model);
-                    strBuilder.append("\nLogin = ").append(model.getLogin())
-                            .append("\nURI = ").append(model.getAvatarUrl())
-                            .append("\nId = ").append(model.getId())
-                            .append("\n-----------------");
-                }
-                showInfoSubject.onNext(strBuilder.toString());
+                showInfoSubject.onNext(getOutput(list));
                 progressBarSubject.onNext(false);
                 disposable.dispose();
             }
@@ -101,6 +99,20 @@ public class Presenter {
                 disposable.dispose();
             }
         });
+    }
+
+    private String getOutput(List<UserModel> list) {
+        StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("\n Size = ").append(list.size())
+                .append("\n---------------------");
+        for (UserModel model : list) {
+            Initializer.getInitializer().getUserList().add(model);
+            strBuilder.append("\nLogin = ").append(model.getLogin())
+                    .append("\nURI = ").append(model.getAvatarUrl())
+                    .append("\nId = ").append(model.getId())
+                    .append("\n-----------------");
+        }
+        return strBuilder.toString();
     }
 
     public void unbindView(){
