@@ -1,17 +1,18 @@
 package com.example.androidpopularlibraries;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.androidpopularlibraries.presenter.Presenter;
 import com.orm.SugarContext;
 
 import javax.inject.Inject;
+
 import io.reactivex.observers.DisposableObserver;
 
 
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
             }
         };
-        presenter.bindView(showInfoObserver, progressBarObserver);
+        presenter.bindView(showInfoObserver, progressBarObserver, this);
     }
 
     @Override
