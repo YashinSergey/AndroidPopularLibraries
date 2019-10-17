@@ -1,6 +1,5 @@
 package com.example.androidpopularlibraries;
 
-import com.example.androidpopularlibraries.MainActivity;
 import com.example.androidpopularlibraries.dagger.DaggerPresenterModule;
 
 import javax.inject.Singleton;
