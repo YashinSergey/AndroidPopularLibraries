@@ -1,9 +1,8 @@
 package com.example.androidpopularlibraries.sugar;
 
-import com.example.androidpopularlibraries.IDBModel;
 import com.orm.SugarRecord;
 
-public class SugarModel extends SugarRecord implements IDBModel {
+public class SugarModel extends SugarRecord {
 
     private String login;
     private String userId;
