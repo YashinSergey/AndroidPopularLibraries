@@ -69,6 +69,7 @@ public class Presenter {
         };
     }
 
+    @SuppressLint("CheckResult")
     public void downloadUserModel() {
         showInfoSubject.onNext("");
         Initializer.getInitializer().getUserList().clear();
@@ -78,7 +79,7 @@ public class Presenter {
             return;
         }
 
-        request.subscribe(new SingleObserver<List<UserModel>>() {
+        request.map(userModels -> getOutput(userModels)).subscribeWith(new SingleObserver<String>() {
             Disposable disposable;
             @Override
             public void onSubscribe(Disposable d) {
@@ -86,8 +87,8 @@ public class Presenter {
                 disposable = d;
             }
             @Override
-            public void onSuccess(List<UserModel> list) {
-                showInfoSubject.onNext(getOutput(list));
+            public void onSuccess(String s) {
+                showInfoSubject.onNext(s);
                 progressBarSubject.onNext(false);
                 disposable.dispose();
             }
