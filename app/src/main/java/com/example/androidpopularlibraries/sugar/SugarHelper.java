@@ -1,7 +1,6 @@
 package com.example.androidpopularlibraries.sugar;
 
 import com.example.androidpopularlibraries.IDBHelper;
-import com.example.androidpopularlibraries.presenter.Presenter;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 
 import java.util.Date;
@@ -16,15 +15,18 @@ public class SugarHelper implements IDBHelper {
 
     private long start;
     private long finish;
+    private List<UserModel> userList;
 
-    public SugarHelper(){}
+    public SugarHelper(List<UserModel> userList){
+        this.userList = userList;
+    }
 
     @Override
     public Single<Tester> saveAll() {
         return Single.create((SingleOnSubscribe<Tester>) emitter -> {
             try {
                 start = new Date().getTime();
-                for (UserModel item : Presenter.userList) {
+                for (UserModel item : userList) {
                     SugarModel sugarModel = new SugarModel(item.getLogin(),
                             item.getAvatarUrl(), item.getId().toString());
                     sugarModel.save();

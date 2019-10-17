@@ -3,11 +3,11 @@ package com.example.androidpopularlibraries.presenter;
 import android.annotation.SuppressLint;
 
 import com.example.androidpopularlibraries.IDBHelper;
+import com.example.androidpopularlibraries.Initializer;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 import com.example.androidpopularlibraries.room.RoomHelper;
 import com.example.androidpopularlibraries.sugar.SugarHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -20,8 +20,6 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.subjects.PublishSubject;
 
 public class Presenter {
-
-    public static List<UserModel> userList = new ArrayList<>();
 
     private PublishSubject<String> showInfoSubject = PublishSubject.create();
     private PublishSubject<Boolean> progressBarSubject = PublishSubject.create();
@@ -68,7 +66,7 @@ public class Presenter {
 
     public void downloadUserModel() {
         showInfoSubject.onNext("");
-        userList.clear();
+        Initializer.getInitializer().getUserList().clear();
 
         if (!networkConnection) return;
 
@@ -85,7 +83,7 @@ public class Presenter {
                 strBuilder.append("\n Size = ").append(list.size())
                         .append("\n---------------------");
                 for (UserModel model : list) {
-                    userList.add(model);
+                    Initializer.getInitializer().getUserList().add(model);
                     strBuilder.append("\nLogin = ").append(model.getLogin())
                             .append("\nURI = ").append(model.getAvatarUrl())
                             .append("\nId = ").append(model.getId())

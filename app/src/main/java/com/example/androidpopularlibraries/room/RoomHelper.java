@@ -2,7 +2,6 @@ package com.example.androidpopularlibraries.room;
 
 import com.example.androidpopularlibraries.IDBHelper;
 import com.example.androidpopularlibraries.Initializer;
-import com.example.androidpopularlibraries.presenter.Presenter;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 
 import java.util.ArrayList;
@@ -19,7 +18,11 @@ public class RoomHelper implements IDBHelper {
     private long start;
     private long finish;
 
-    public RoomHelper(){}
+    private List<UserModel> userList;
+
+    public RoomHelper(List<UserModel> userList){
+        this.userList = userList;
+    }
 
     @Override
     public Single<Tester> saveAll(){
@@ -27,7 +30,7 @@ public class RoomHelper implements IDBHelper {
             start = new Date().getTime();
             List<RoomModel> roomModelList = new ArrayList<>();
             RoomModel roomModel = new RoomModel();
-            for (UserModel model : Presenter.userList) {
+            for (UserModel model : userList) {
                 roomModel.setLogin(model.getLogin());
                 roomModel.setAvatarUrl(model.getAvatarUrl());
                 roomModel.setUserId(model.getId().toString());
