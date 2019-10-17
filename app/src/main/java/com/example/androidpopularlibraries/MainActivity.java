@@ -18,10 +18,14 @@ import io.reactivex.observers.DisposableObserver;
 
 public class MainActivity extends AppCompatActivity {
 
+    private DisposableObserver<Boolean> progressBarObserver;
+    private DisposableObserver<String> showInfoObserver;
+
     private TextView tvInfo;
     private ProgressBar progressBar;
     @Inject
     Presenter presenter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +64,31 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        DisposableObserver<String> showInfoObserver = new DisposableObserver<String>() {
+        createShowInfoObserver();
+        createProgressBarObserver();
+        presenter.bindView(showInfoObserver, progressBarObserver, this);
+    }
+
+    private void createProgressBarObserver() {
+        progressBarObserver = new DisposableObserver<Boolean>() {
+            @Override
+            public void onNext(Boolean bool) {
+                progressBar.setVisibility(bool? View.VISIBLE : View.GONE);
+            }
+            @Override
+            public void onError(Throwable e) {
+                tvInfo.setText("");
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onComplete() {
+                progressBar.setVisibility(View.GONE);
+            }
+        };
+    }
+
+    private void createShowInfoObserver() {
+        showInfoObserver = new DisposableObserver<String>() {
             @Override
             public void onNext(String s) {
                 tvInfo.setText(s);
@@ -73,23 +101,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete() {}
         };
-
-        DisposableObserver<Boolean> progressBarObserver = new DisposableObserver<Boolean>() {
-            @Override
-            public void onNext(Boolean bool) {
-                progressBar.setVisibility(bool?View.VISIBLE : View.GONE);
-            }
-            @Override
-            public void onError(Throwable e) {
-                tvInfo.setText("");
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-            @Override
-            public void onComplete() {
-                progressBar.setVisibility(View.GONE);
-            }
-        };
-        presenter.bindView(showInfoObserver, progressBarObserver, this);
     }
 
     @Override
