@@ -55,10 +55,10 @@ public class Presenter {
                 showInfoSubject.onNext("");
             }
             @Override
-            public void onSuccess(IDBHelper.Tester timer) {
+            public void onSuccess(IDBHelper.Tester tester) {
                 progressBarSubject.onNext(false);
-                showInfoSubject.onNext("Quantity = " + timer.getCount() +
-                        "\nTime in ms = " + timer.getTime());
+                showInfoSubject.onNext("Quantity = " + tester.getCount() +
+                        "\nTime in ms = " + tester.getTime());
             }
             @SuppressLint("SetTextI18n")
             @Override
