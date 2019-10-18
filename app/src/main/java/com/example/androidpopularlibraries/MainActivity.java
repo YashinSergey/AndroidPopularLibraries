@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createProgressBarObserver() {
+        if (!progressBarObserver.isDisposed()) progressBarObserver.dispose();
         progressBarObserver = new DisposableObserver<Boolean>() {
             @Override
             public void onNext(Boolean bool) {
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createShowInfoObserver() {
+        if (!showInfoObserver.isDisposed()) showInfoObserver.dispose();
         showInfoObserver = new DisposableObserver<String>() {
             @Override
             public void onNext(String s) {
@@ -107,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        if (!showInfoObserver.isDisposed()) showInfoObserver.dispose();
+        if (!progressBarObserver.isDisposed()) progressBarObserver.dispose();
         presenter.unbindView();
     }
 
