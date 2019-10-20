@@ -14,12 +14,14 @@ import com.orm.SugarContext;
 import javax.inject.Inject;
 
 import io.reactivex.observers.DisposableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private DisposableObserver<Boolean> progressBarObserver;
     private DisposableObserver<String> showInfoObserver;
+    private DisposableSingleObserver<String> toastObserver;
 
     private TextView tvInfo;
     private ProgressBar progressBar;
@@ -64,9 +66,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        createToastObserver();
         createShowInfoObserver();
         createProgressBarObserver();
-        presenter.bindView(showInfoObserver, progressBarObserver, this);
+        presenter.bindView(showInfoObserver, progressBarObserver, toastObserver);
     }
 
     private void createProgressBarObserver() {
@@ -80,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             public void onError(Throwable e) {
                 progressBar.setVisibility(View.GONE);
                 tvInfo.setText("");
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                toastObserver.onSuccess(e.getMessage());
             }
             @Override
             public void onComplete() {
@@ -99,10 +102,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onError(Throwable e) {
                 tvInfo.setText("");
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                toastObserver.onSuccess(e.getMessage());
             }
             @Override
             public void onComplete() {}
+        };
+    }
+
+    private void createToastObserver() {
+        if (toastObserver != null && !toastObserver.isDisposed()) toastObserver.dispose();
+        toastObserver = new DisposableSingleObserver<String>() {
+            @Override
+            protected void onStart() {
+                super.onStart();
+            }
+            @Override
+            public void onSuccess(String s) {
+                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                tvInfo.setText("");
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         };
     }
 
@@ -111,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         if (showInfoObserver != null && !showInfoObserver.isDisposed()) showInfoObserver.dispose();
         if (progressBarObserver != null && !progressBarObserver.isDisposed()) progressBarObserver.dispose();
+        if (toastObserver != null && !toastObserver.isDisposed()) toastObserver.dispose();
         presenter.unbindView();
     }
 
