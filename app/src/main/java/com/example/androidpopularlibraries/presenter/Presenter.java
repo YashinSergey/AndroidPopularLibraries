@@ -1,8 +1,6 @@
 package com.example.androidpopularlibraries.presenter;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.widget.Toast;
 
 import com.example.androidpopularlibraries.IDBHelper;
 import com.example.androidpopularlibraries.Initializer;
@@ -20,11 +18,13 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.SingleSubject;
 
 public class Presenter {
 
     private PublishSubject<String> showInfoSubject = PublishSubject.create();
     private PublishSubject<Boolean> progressBarSubject = PublishSubject.create();
+    private SingleSubject<String> toastSubject = SingleSubject.create();
     @Inject
     public RoomHelper roomHelper;
     @Inject
@@ -33,17 +33,16 @@ public class Presenter {
     Single<List<UserModel>> request;
     @Inject
     Boolean networkConnection;
-    private Context context;
 
     public Presenter(IPresenterComponent component) {
         component.injectToPresenter(this);
     }
 
-    public void bindView(DisposableObserver<String> showInfoObserver,
-                         DisposableObserver<Boolean> progressBarObserver, Context context) {
+    public void bindView(DisposableObserver<String> showInfoObserver, DisposableObserver<Boolean> progressBarObserver,
+                         DisposableSingleObserver<String> toastObserver) {
         this.showInfoSubject.subscribe(showInfoObserver);
         this.progressBarSubject.subscribe(progressBarObserver);
-        this.context = context;
+        this.toastSubject.subscribe(toastObserver);
     }
 
     public DisposableSingleObserver<IDBHelper.Tester> createObserver() {
@@ -75,7 +74,7 @@ public class Presenter {
         Initializer.getInitializer().getUserList().clear();
 
         if (!networkConnection) {
-            Toast.makeText(context, "Internet connection required", Toast.LENGTH_SHORT).show();
+            toastSubject.onSuccess("Internet connection required");
             return;
         }
 
