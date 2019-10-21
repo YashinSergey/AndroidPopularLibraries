@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import androidx.annotation.Nullable;
+
 import com.example.androidpopularlibraries.retrofit.IRestApi;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 
@@ -53,6 +55,7 @@ public class DaggerNetModule {
     }
 
     @Provides
+    @Nullable
     NetworkInfo getNetworkInfo() {
         ConnectivityManager connectivityManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -60,7 +63,7 @@ public class DaggerNetModule {
     }
 
     @Provides
-    boolean checkNetworkConnection(NetworkInfo networkInfo) {
+    boolean checkNetworkConnection(@Nullable NetworkInfo networkInfo) {
         return networkInfo != null && networkInfo.isConnected();
     }
 }

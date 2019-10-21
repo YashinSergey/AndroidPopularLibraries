@@ -1,14 +1,13 @@
 package com.example.androidpopularlibraries.presenter;
 
 import android.annotation.SuppressLint;
-import android.os.Bundle;
 
-import com.example.androidpopularlibraries.retrofit.IRestApi;
+import com.example.androidpopularlibraries.IDBHelper;
+import com.example.androidpopularlibraries.Initializer;
 import com.example.androidpopularlibraries.retrofit.UserModel;
 import com.example.androidpopularlibraries.room.RoomHelper;
 import com.example.androidpopularlibraries.sugar.SugarHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -18,13 +17,14 @@ import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.SingleSubject;
 
 public class Presenter {
 
-    public static List<UserModel> userList = new ArrayList<>();
-
-    private DisposableObserver<String> showInfoObserver;
-    private DisposableObserver<Boolean> progressBarObserver;
+    private PublishSubject<String> showInfoSubject = PublishSubject.create();
+    private PublishSubject<Boolean> progressBarSubject = PublishSubject.create();
+    private SingleSubject<String> toastSubject = SingleSubject.create();
     @Inject
     public RoomHelper roomHelper;
     @Inject
@@ -38,75 +38,85 @@ public class Presenter {
         component.injectToPresenter(this);
     }
 
-    public void bindView(DisposableObserver<String> showInfoObserver, DisposableObserver<Boolean> progressBarObserver) {
-        this.showInfoObserver = showInfoObserver;
-        this.progressBarObserver = progressBarObserver;
+    public void bindView(DisposableObserver<String> showInfoObserver, DisposableObserver<Boolean> progressBarObserver,
+                         DisposableSingleObserver<String> toastObserver) {
+        this.showInfoSubject.subscribe(showInfoObserver);
+        this.progressBarSubject.subscribe(progressBarObserver);
+        this.toastSubject.subscribe(toastObserver);
     }
 
-    public DisposableSingleObserver<Bundle> createObserver() {
-        return new DisposableSingleObserver<Bundle>() {
+    public DisposableSingleObserver<IDBHelper.Tester> createObserver() {
+        return new DisposableSingleObserver<IDBHelper.Tester>() {
             @Override
             protected void onStart() {
                 super.onStart();
-                progressBarObserver.onNext(true);
-                showInfoObserver.onNext("");
+                progressBarSubject.onNext(true);
+                showInfoSubject.onNext("");
             }
             @Override
-            public void onSuccess(Bundle bundle) {
-                progressBarObserver.onNext(false);
-                showInfoObserver.onNext("Quantity = " + bundle.getInt("count") +
-                        "\nTime in ms = " + bundle.getLong("ms"));
+            public void onSuccess(IDBHelper.Tester tester) {
+                progressBarSubject.onNext(false);
+                showInfoSubject.onNext("Quantity = " + tester.getCount() +
+                        "\nTime in ms = " + tester.getTime());
             }
             @SuppressLint("SetTextI18n")
             @Override
             public void onError(Throwable e) {
-                progressBarObserver.onNext(false);
-                showInfoObserver.onNext("DB Error: " + e.getMessage());
+                progressBarSubject.onNext(false);
+                showInfoSubject.onNext("DB Error: " + e.getMessage());
             }
         };
     }
 
+    @SuppressLint("CheckResult")
     public void downloadUserModel() {
-        showInfoObserver.onNext("");
-        userList.clear();
+        showInfoSubject.onNext("");
+        Initializer.getInitializer().getUserList().clear();
 
-        if (!networkConnection) return;
+        if (!networkConnection) {
+            toastSubject.onSuccess("Internet connection required");
+            return;
+        }
 
-        request.subscribe(new SingleObserver<List<UserModel>>() {
+        request.map(userModels -> getOutput(userModels)).subscribeWith(new SingleObserver<String>() {
             Disposable disposable;
-            StringBuilder strBuilder = new StringBuilder();
             @Override
             public void onSubscribe(Disposable d) {
-                progressBarObserver.onNext(true);
+                progressBarSubject.onNext(true);
                 disposable = d;
             }
             @Override
-            public void onSuccess(List<UserModel> list) {
-                strBuilder.append("\n Size = ").append(list.size())
-                        .append("\n---------------------");
-                for (UserModel model : list) {
-                    userList.add(model);
-                    strBuilder.append("\nLogin = ").append(model.getLogin())
-                            .append("\nURI = ").append(model.getAvatarUrl())
-                            .append("\nId = ").append(model.getId())
-                            .append("\n-----------------");
-                }
-                showInfoObserver.onNext(strBuilder.toString());
-                progressBarObserver.onNext(false);
+            public void onSuccess(String s) {
+                showInfoSubject.onNext(s);
+                progressBarSubject.onNext(false);
                 disposable.dispose();
             }
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
-                showInfoObserver.onError(e);
-                progressBarObserver.onNext(false);
+                showInfoSubject.onError(e);
+                progressBarSubject.onNext(false);
                 disposable.dispose();
             }
         });
     }
 
+    private String getOutput(List<UserModel> list) {
+        StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("\n Size = ").append(list.size())
+                .append("\n---------------------");
+        for (UserModel model : list) {
+            Initializer.getInitializer().getUserList().add(model);
+            strBuilder.append("\nLogin = ").append(model.getLogin())
+                    .append("\nURI = ").append(model.getAvatarUrl())
+                    .append("\nId = ").append(model.getId())
+                    .append("\n-----------------");
+        }
+        return strBuilder.toString();
+    }
+
     public void unbindView(){
-        showInfoObserver.dispose();
-        progressBarObserver.dispose();
+        showInfoSubject.onComplete();
+        progressBarSubject.onComplete();
     }
 }

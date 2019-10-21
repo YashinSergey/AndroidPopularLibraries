@@ -1,26 +1,33 @@
 package com.example.androidpopularlibraries;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.androidpopularlibraries.presenter.Presenter;
 import com.orm.SugarContext;
 
 import javax.inject.Inject;
+
 import io.reactivex.observers.DisposableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    private DisposableObserver<Boolean> progressBarObserver;
+    private DisposableObserver<String> showInfoObserver;
+    private DisposableSingleObserver<String> toastObserver;
 
     private TextView tvInfo;
     private ProgressBar progressBar;
     @Inject
     Presenter presenter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +66,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        DisposableObserver<String> showInfoObserver = new DisposableObserver<String>() {
+        createToastObserver();
+        createShowInfoObserver();
+        createProgressBarObserver();
+        presenter.bindView(showInfoObserver, progressBarObserver, toastObserver);
+    }
+
+    private void createProgressBarObserver() {
+        if (progressBarObserver != null && !progressBarObserver.isDisposed()) progressBarObserver.dispose();
+        progressBarObserver = new DisposableObserver<Boolean>() {
+            @Override
+            public void onNext(Boolean bool) {
+                progressBar.setVisibility(bool? View.VISIBLE : View.GONE);
+            }
+            @Override
+            public void onError(Throwable e) {
+                progressBar.setVisibility(View.GONE);
+                tvInfo.setText("");
+                toastObserver.onSuccess(e.getMessage());
+            }
+            @Override
+            public void onComplete() {
+                progressBar.setVisibility(View.GONE);
+            }
+        };
+    }
+
+    private void createShowInfoObserver() {
+        if (showInfoObserver != null && !showInfoObserver.isDisposed()) showInfoObserver.dispose();
+        showInfoObserver = new DisposableObserver<String>() {
             @Override
             public void onNext(String s) {
                 tvInfo.setText(s);
@@ -67,33 +102,39 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onError(Throwable e) {
                 tvInfo.setText("");
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                toastObserver.onSuccess(e.getMessage());
             }
             @Override
             public void onComplete() {}
         };
+    }
 
-        DisposableObserver<Boolean> progressBarObserver = new DisposableObserver<Boolean>() {
+    private void createToastObserver() {
+        if (toastObserver != null && !toastObserver.isDisposed()) toastObserver.dispose();
+        toastObserver = new DisposableSingleObserver<String>() {
             @Override
-            public void onNext(Boolean bool) {
-                progressBar.setVisibility(bool?View.VISIBLE : View.GONE);
+            protected void onStart() {
+                super.onStart();
             }
+            @Override
+            public void onSuccess(String s) {
+                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+            }
+
             @Override
             public void onError(Throwable e) {
                 tvInfo.setText("");
                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
-            @Override
-            public void onComplete() {
-                progressBar.setVisibility(View.GONE);
-            }
         };
-        presenter.bindView(showInfoObserver, progressBarObserver);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if (showInfoObserver != null && !showInfoObserver.isDisposed()) showInfoObserver.dispose();
+        if (progressBarObserver != null && !progressBarObserver.isDisposed()) progressBarObserver.dispose();
+        if (toastObserver != null && !toastObserver.isDisposed()) toastObserver.dispose();
         presenter.unbindView();
     }
 

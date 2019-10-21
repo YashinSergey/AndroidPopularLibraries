@@ -2,7 +2,7 @@ package com.example.androidpopularlibraries.sugar;
 
 import com.orm.SugarRecord;
 
-public class SugarModel extends SugarRecord{
+public class SugarModel extends SugarRecord {
 
     private String login;
     private String userId;
